@@ -1,17 +1,4 @@
-{
-	“dirlist”: [
-               
-                ./test/test_uno
-		
-		./test/test_due
-		]
-	“filetypelist”: [ 
-                “txt”, 
-                “csv”,
-                “xlsx”
-                ]
-	“wordlist”: { 
-                “progetto”: 2, 
-		“docente”: 1,
-                } 
+{"dirlist" : ["./test/" ],
+ "filetypelist": [ "txt","csv","xlsx"],
+ "wordlist": { "progetto": 2, "docente": 1 } 
 }
