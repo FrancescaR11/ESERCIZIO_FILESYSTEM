@@ -17,6 +17,8 @@ from Eliminazione_Nan import replace_Nan_with_zeros
 import re
 import openpyxl
 import csv
+import PyPDF2
+import pdfplumber
 
 parser=argparse.ArgumentParser()
 
@@ -129,13 +131,41 @@ for file in lista_path:
                     lista_output.append(file)
           
 
-        
+      if suffix=="pdf":
+         
+            # pdf_file = open(file,mode="rb")
+            # read_pdf = PyPDF2.PdfFileReader(pdf_file)
+            # number_of_pages = read_pdf.getNumPages()
+            # page = read_pdf.getPage(0)
+            # page_content = page.extractText()
+            # print(page_content)
     
- 
+            # pdf_file = open(file, 'rb')
+            # read_pdf = PyPDF2.PdfFileReader(pdf_file)
+            # number_of_pages = read_pdf.getNumPages()
+            # page = read_pdf.getPage(0)
+            # page_content = page.extractText()
+            # print(page_content.encode('utf-8'))
     
- 
-    
- 
+            
+            with pdfplumber.open (file) as pdf: 
+                first_page = pdf.pages [0] 
+                stringhe1=first_page.extract_text ()
+                lista_stringhe=re.findall(r"[\w']+", stringhe)                                 
+                rip=[]  
+      
+                for occorrenza in dati[chiavi[2]].keys():
+                 ripetizioni=0
+         
+                 for parola in lista_stringhe:
+              
+                    if parola==occorrenza:
+                     ripetizioni+=1
+                 rip.append(ripetizioni)
+     
+                if rip==list(dati[chiavi[2]].values()):
+                  lista_output.append(file)
+
     
  
     

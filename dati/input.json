@@ -1,4 +1,4 @@
 {"dirlist" : ["./test/" ],
- "filetypelist": [ "txt","csv","xlsx"],
+ "filetypelist": [ "txt","csv","xlsx","pdf"],
  "wordlist": { "progetto": 2, "docente": 1 } 
 }
