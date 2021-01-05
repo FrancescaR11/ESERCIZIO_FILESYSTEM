@@ -6,24 +6,24 @@ Created on Mon Jan  4 11:35:17 2021
 @author: francescaronci, gaiad
 """
 
-import os
-#import pandas as pd
-import argparse
-# dirs contiene le sottocartelle 
-# name contiene nome del file
-import json
-from os.path import splitext
-from Eliminazione_Nan import replace_Nan_with_zeros
-import re
-import openpyxl
-import csv
-import PyPDF2
-import pdfplumber
+import os 
+import argparse 
+import json  
+from os.path import splitext 
+#from Eliminazione_Nan import replace_Nan_with_zeros
+import re  
+import openpyxl 
+import csv  
+#import PyPDF2
+import pdfplumber 
 
 parser=argparse.ArgumentParser()
 
-parser.add_argument("-i", "--input_data", help="Complete path to the file containing yellow_tripdata",
+parser.add_argument("-i", "--input_data", help="Complete path to the file containing input data",
                     type=str, default='./dati/input.json')
+
+parser.add_argument("-o", "--out_data", help="Complete path to the file containing output data", 
+                    type=str, default='./results/output.txt')
 
 args=parser.parse_args()
 
@@ -34,6 +34,8 @@ with open(args.input_data) as json_file:
 chiavi=list(dati.keys())
 lista_path=[]
 
+# dirs contiene le sottocartelle 
+# name contiene nome del file
 
 for path in dati[chiavi[0]]:
  for root,dirs, files in os.walk(path, topdown=False):
@@ -63,7 +65,7 @@ for file in lista_path:
         
         file_txt=(f.read())
           
-        lista_stringhe=re.findall(r"[\w']+", file_txt.lower()) #Elimino la punteggiatura per eseguire il comando split()
+        lista_stringhe=re.findall(r"[\w']+", file_txt.lower()) #Elimino la punteggiatura e divido le stringhe ad ogni spazio
         rip=[]  
         
         for occorrenza in dati[chiavi[2]].keys():
@@ -149,15 +151,17 @@ for file in lista_path:
     
             
             with pdfplumber.open (file) as pdf: 
-                first_page = pdf.pages [0] 
-                stringhe1=first_page.extract_text ()
-                lista_stringhe=re.findall(r"[\w']+", stringhe)                                 
+                pages = pdf.pages 
+                stringhe_pdf=' '
+                for page in pages: 
+                 stringhe_pdf=stringhe_pdf+ page.extract_text () + ' '
+                lista_stringhe_pdf=re.findall(r"[\w']+", stringhe_pdf)                                 
                 rip=[]  
       
                 for occorrenza in dati[chiavi[2]].keys():
                  ripetizioni=0
          
-                 for parola in lista_stringhe:
+                 for parola in lista_stringhe_pdf:
               
                     if parola==occorrenza:
                      ripetizioni+=1
@@ -166,11 +170,10 @@ for file in lista_path:
                 if rip==list(dati[chiavi[2]].values()):
                   lista_output.append(file)
 
-    
+       
  
-    
- 
-    
+with open(args.out_data, "w") as output:
+    output.write(str(lista_output))    
  
     
  
