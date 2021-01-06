@@ -216,10 +216,10 @@ class XLSXReader(FormatReader):
         
          stringhe=' ' # Inizializzo una stringa vuota
          excel_document = openpyxl.load_workbook(file) # Apro file excel
-         nomi_fogli=(excel_document.get_sheet_names()) # Salvo il nome dei fogli in una lista
+         nomi_fogli=(excel_document.sheetnames) # Salvo il nome dei fogli in una lista
    
          for nome in nomi_fogli: # Scandisco tutti i fogli del file excel
-          sheet = excel_document.get_sheet_by_name(nome)  
+          sheet = excel_document[nome]
 
           for row in sheet.iter_rows(): # Scandisco le righe dei fogli excel
     
