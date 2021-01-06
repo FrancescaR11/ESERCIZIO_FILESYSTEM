@@ -2,7 +2,7 @@
 """
 Created on Tue Jan  5 18:14:47 2021
 
-@author: gaiad
+@author: gaiad, francescaronci
 """
 
 import os 
