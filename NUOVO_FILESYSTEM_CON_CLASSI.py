@@ -37,59 +37,27 @@ args=parser.parse_args()
 
 '''
 
-Creo classe astratta sulle condizioni. Questa classe rimanda alla classe PathChecker,
-indipendentemente dal formato.
-Questa classe contiene il metodo astratto checker(), che viene implementato diversamente
-in base alla condizione.
-
-'''
-
-class Condition(ABC):
-    """
-    interface
-    """
-    def __init__(self,filename):
-        self.filename=filename
-
-    @staticmethod
-    
-    def create_instance(filename):  
-
-        return PathChecker(filename)
-            
-    @abstractmethod
-    def checker(self) :
-        """
-        abstract method
-        """
-        pass
-        
-       
-       
-
-'''
-
-Creo la classe derivata che prende in ingresso il file che stiamo analizzando. 
+Creo la classe che prende in ingresso il file che stiamo analizzando. 
 Se il formato è presente nel file di input, chiamo la classe che verifica la 
 seconda condizione.
 
 
 '''
 
-class PathChecker(Condition):
+class PathChecker():
     
     def __init__(self, filename):
         
-       super().__init__(filename)
+       self.filename=filename
 
         
-    def checker(self,filename) :
+    def checker(filename) :
        
         suffix = splitext(filename)[1][1:].lower()
         
-        for formato in dati['filetypelist']: #Scandisco i formati presenti nel file di input
+
             
-            if suffix==formato: # Se il formato del file è presente tra i formati del file di input...
+        if suffix in dati['filetypelist']: # Se il formato del file è presente tra i formati del file di input...
                
                # Se il file contiene una stringa chiamo la classe che conta le occorrenze
                
@@ -102,9 +70,42 @@ class PathChecker(Condition):
                elif suffix=='jpeg':
                    
                    return ImageChecker(filename)
-               
-        
+        else:
+                
+                return 'failure'
+            
+            
+            
+            
+'''
+
+Creo classe astratta sulle condizioni. Questa classe rimanda alla classe PathChecker,
+indipendentemente dal formato.
+Questa classe contiene il metodo astratto checker(), che viene implementato diversamente
+in base alla condizione.
+
+'''
+
+class Condition(ABC):
+    """
+    interface
+    """
+    def __init__(self,filename):
+       self.filename=filename
+
+    @staticmethod
     
+    def create_instance(filename):  
+
+        return PathChecker.checker(filename)
+            
+    @abstractmethod
+    def checker(self) :
+        """
+        abstract method
+        """
+        pass
+        
     
 
 '''
@@ -116,18 +117,24 @@ la lista dei path dei file che soddisfano sia la condizione sul formato che quel
  
 class OccurrenceChecker(Condition):
     
-    def __init__(self, filename):
+    def __init__(self,filename):
         
-       super().__init__(filename)
+      self.filename=filename 
 
         
     
-    def checker(self):   
+    def checker(self,filename):   
         
+       parametro=FormatReader.create_instance(filename).get_file_content()
+       
+       if (Occurrence_Condition(dati,parametro))== True:
         
-        lista_path_output=Occurrence_Condition(dati,lista_stringhe,file,lista_output)
-        
-        return lista_path_output
+        return True
+       
+       else:
+       
+        return False
+    
     
 
 '''
@@ -358,37 +365,49 @@ for path in dati['dirlist']: # Scandisco tutti i path contenuti nel file input
 # Inizializzo la lista che conterrà i file che soddisfano sia la condizione sul formato che quella sulle occorrenze delle parole
 
 lista_output=[] 
-   
-       
+
 
 for file in lista_path: # Scandisco tutti i file trovati nei path passati con il file di input
     
-    # Chiamo classe Condition che rimanda alla classe derivata PathChecker
+    condizione_verificata=True
+    condizioni_finite=False 
+ 
+    condition=Condition.create_instance(file)
     
-    path_checker=Condition.create_instance(file)
-    
-    # Chiamo il metodo astratto checker() che rimanda la classe che verifica la seconda condizione
-    
-    condition_checker= path_checker.checker(file)
-    
-    # Se la prima condizione è verificata, estraggo la lista dei path dei file che verificano anche la seconda
-    
-    if (condition_checker is not None):
-      
-     # Chiamo classe FormatReader che rimanda alla classe derivata che fa riferimento al formato del file   
-               
-     reader = FormatReader.create_instance(file)  
+
      
-     # Chiamo il metodo astratto get_file_content() che restituisce la lista di stringhe contenuta nel file
-     
-     lista_stringhe = reader.get_file_content()
-     
-     
-     lista_output=condition_checker.checker()
-     
-    else:
-    
-        print('Nessuna corrispondenza sul formato trovata.')
+    if condition is not ['failure']:
+        
+        
+         
+         while (condizione_verificata) & (not(condizioni_finite)):
+         
+          try:
+             condizione_verificata= condition.checker(file)
+             
+             condition=condizione_verificata
+             
+  
+             
+         
+          except AttributeError:
+              
+             condizioni_finite=True
+             
+             print('Condizioni da verificare terminate')
+             
+        
+         if condizione_verificata==True :
+             
+             lista_output.append(file)
+        
+         else :
+             print ('Non tutte le condizioni sono verificate')
+   
+    else :
+         print ('Il formato del file non è tra quelli cercati')
+        
+             
 
 
 
