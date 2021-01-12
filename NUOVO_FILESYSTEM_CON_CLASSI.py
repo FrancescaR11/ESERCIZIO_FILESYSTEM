@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jan  9 13:33:08 2021
+Created on Tue Jan 12 23:12:29 2021
 
 @author: francescaronci,gaiad
 """
+
 
 
 import os 
@@ -17,6 +18,7 @@ import csv
 import pdfplumber 
 from abc import ABC, abstractmethod
 from Occurrence_Condition import Occurrence_Condition
+import datetime,time
 
 '''
 
@@ -27,7 +29,7 @@ Uso argparse per la lettura del file di input e la scrittura del file di output.
 parser=argparse.ArgumentParser()
 
 parser.add_argument("-i", "--input_data", help="Complete path to the file containing input data",
-                    type=str, default='./dati/input.json')
+                    type=str, default='./dati/input4.json')
 
 parser.add_argument("-o", "--out_data", help="Complete path to the file containing output data", 
                     type=str, default='./results/output.txt')
@@ -60,14 +62,19 @@ class PathChecker():
         if suffix in dati['filetypelist']: # Se il formato del file è presente tra i formati del file di input...
                
                # Se il file contiene una stringa chiamo la classe che conta le occorrenze
-               
-               if (suffix == 'txt') | (suffix == 'csv') | (suffix == 'xlsx') | (suffix == 'pdf'): 
-            
-                   return OccurrenceChecker(filename)
+                  try:
+                     dati['wordlist']
+                     if (suffix == 'txt') | (suffix == 'csv') | (suffix == 'xlsx') | (suffix == 'pdf'): 
+                 
+                        return OccurrenceChecker(filename)
+                  except KeyError:
+                      
+                     return SizeChecker(filename)
+                   
                
                 # Se il file è un immagine chiamo la classe che opera sulle immagini
                
-               elif suffix=='jpeg':
+                  if suffix=='jpeg':
                    
                    return ImageChecker(filename)
         else:
@@ -129,13 +136,58 @@ class OccurrenceChecker(Condition):
        
        if (Occurrence_Condition(dati,parametro))== True:
         
-        return True
+        return SizeChecker(filename)
        
        else:
        
         return False
     
+class SizeChecker(Condition):
     
+    def __init__(self,filename):
+        
+        
+        self.filename=filename
+        
+    def checker(self,filename):
+        
+        try:
+        
+          if  dati['size']['min'] < os.path.getsize (filename) < dati['size']['max']:
+          
+              return TimeChecker(filename)
+          else:
+              return False
+              
+        except KeyError:
+           
+             return TimeChecker(filename)
+    
+    
+class TimeChecker(Condition):
+    
+    def __init__(self,filename):
+        
+        
+        self.filename=filename
+        
+    def checker(self,filename):   
+        
+        try:
+            if dati['time']['min']=='' :
+                time_min=0
+                
+                
+            else: 
+                time_min=time.mktime(datetime.datetime.strptime(dati['time']['min'], "%Y-%m-%d").timetuple())
+
+            time_max=time.mktime(datetime.datetime.strptime(dati['time']['max'], "%Y-%m-%d").timetuple())
+            if  (time_min) < (os.path.getctime(file)) < (time_max):
+                return True
+            else:
+                return False
+        except KeyError:
+            return True
 
 '''
 Creo la classe derivata che verifica la seconda condizione sulle immagini.
@@ -168,8 +220,11 @@ class FormatReader(ABC):
     """
     interface
     """
-    def __init__(self,filename):
+    def __init__(self,filename):  #,size,creation_date):
+        
         self.filename=filename
+        #self.size=size
+        #self.creation_date=creation_date
 
     @abstractmethod
     def get_file_content(self):
@@ -380,7 +435,7 @@ for file in lista_path: # Scandisco tutti i file trovati nei path passati con il
         
         
          
-         while (condizione_verificata) & (not(condizioni_finite)):
+         while ((condizione_verificata)!=False) & (not(condizioni_finite)):
          
           try:
              condizione_verificata= condition.checker(file)

@@ -1,0 +1,7 @@
+{"dirlist" : ["./test/" ],
+ "filetypelist": [ "txt", "pdf", "log"],
+ "size": { "min": 50, "max": 1000 }, 
+ "time": { "min": "", "max": "2020-10-01" },
+ "wordlist": { "time": 5 }
+}
+

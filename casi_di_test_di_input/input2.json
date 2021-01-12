@@ -1,0 +1,6 @@
+{"dirlist" : ["./test/" ],
+ "filetypelist": [ "txt", "pdf"],
+ "wordlist": { "progetto": 2, "docente": 1 }, 
+ "time": { "min": "", "max": "2020-10-01" }
+}
+

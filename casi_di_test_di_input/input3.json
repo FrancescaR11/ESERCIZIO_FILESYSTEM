@@ -1,0 +1,6 @@
+{"dirlist" : ["./test/" ],
+ "filetypelist": [ "csv","xlsx","pdf"],
+ "size": { "min": 50, "max": 1000 }, 
+ "time": { "min": "", "max": "2020-10-01" }
+}
+
