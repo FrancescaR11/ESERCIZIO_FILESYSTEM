@@ -14,7 +14,7 @@ Per poter eseguire il codice è necessario installare i seguenti moduli:
 - argparse;
 - openpyxl;
 - pdfplumber;
-- ObjectDetection,
+- ObjectDetection.
 Inoltre, per eseguire il programma senza warning è necessario installare:
 - openpyxl;
 - pdfplumber;
