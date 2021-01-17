@@ -78,8 +78,7 @@ class PathChecker():
                 
                return 'failure'
             
-            
-            
+                       
             
 '''
 
@@ -158,7 +157,7 @@ class OccurrenceChecker(Condition):
                 
               ripetizioni+=1 #..incremento
          
-         if ripetizioni== self.occorrenza: #Se la stringa è presente tante volte quanto richiesto dalla condizione..
+         if ripetizioni >= self.occorrenza: #Se la stringa è presente almeno tante volte quanto richiesto dalla condizione..
               
                return True 
          else :
@@ -308,7 +307,7 @@ class ImageChecker(Condition):
                 
                ripetizioni+=1  #..incremento
          
-            if ripetizioni== self.occurrence: #Se l'oggetto' è presente tante volte quanto richiesto dalla condizione..
+            if ripetizioni >= self.occurrence: #Se l'oggetto' è presente almeno tante volte quanto richiesto dalla condizione..
               
                return True
             else :
@@ -336,11 +335,24 @@ class FormatReader(ABC):
     interface
     """
    
-    def __init__(self,filename):  #,size,creation_date):
+    def __init__(self,filename):  
         
       self.filename=filename
       super().__init__()
 
+    @abstractmethod
+    def size_extractor(self):
+
+      file_size=os.path.getsize (self.filename)
+      
+      return file_size
+  
+    @abstractmethod
+    def time_extractor(self):
+        
+        file_time=os.path.getctime(self.filename)
+        
+        return file_time
 
     @abstractmethod
     def get_file_content(self):
@@ -393,15 +405,15 @@ class JPEGReader(FormatReader):
         
     def size_extractor(self):
         
-      file_size=os.path.getsize (self.filename)
-      
-      return file_size
+        file_size=super().size_extractor()
+        
+        return file_size
   
     def time_extractor(self):
         
-        file_time=os.path.getctime(self.filename)
+        file_time=super().size_extractor()
         
-        return file_time    
+        return file_time   
 
     
     def get_file_content(self):
@@ -418,7 +430,11 @@ class JPEGReader(FormatReader):
         
         #creo la lista detection contenente gli oggetti rilevati nell'immagine con una probabilità superiore al 30%. 
         
+<<<<<<< HEAD
+        detection = detector.detectObjectsFromImage(input_image=file, output_image_path=args.out_data_2+os.path.basename(self.filename),minimum_percentage_probability=30)
+=======
         detection = detector.detectObjectsFromImage(input_image=self.filename, output_image_path=args.out_data_2+os.path.basename(self.filename),minimum_percentage_probability=30)
+>>>>>>> ef3e09756415084f396010d0b94f3ddfca9e2717
         
         for eachItem in detection:
             
@@ -441,15 +457,15 @@ class TXTReader(FormatReader):
 
     def size_extractor(self):
         
-      file_size=os.path.getsize (self.filename)
-      
-      return file_size
+        file_size=super().size_extractor()
+        
+        return file_size
   
     def time_extractor(self):
         
-        file_time=os.path.getctime(self.filename)
+        file_time=super().size_extractor()
         
-        return file_time
+        return file_time 
     
    
     def get_file_content(self):
@@ -474,15 +490,15 @@ class CSVReader(FormatReader):
 
     def size_extractor(self):
         
-      file_size=os.path.getsize (self.filename)
-    
-      return file_size
+        file_size=super().size_extractor()
+        
+        return file_size
   
     def time_extractor(self):
         
-        file_time=os.path.getctime(self.filename)
+        file_time=super().size_extractor()
         
-        return file_time
+        return file_time 
   
     def get_file_content(self):
         
@@ -517,15 +533,15 @@ class XLSXReader(FormatReader):
 
     def size_extractor(self):
         
-      file_size=os.path.getsize (self.filename)  
-    
-      return file_size
+        file_size=super().size_extractor()
+        
+        return file_size
   
     def time_extractor(self):
         
-        file_time=os.path.getctime(self.filename)
+        file_time=super().size_extractor()
         
-        return file_time
+        return file_time 
     
     def get_file_content(self):
         
@@ -563,15 +579,15 @@ class PDFReader(FormatReader):
    
     def size_extractor(self):
         
-      file_size=os.path.getsize (self.filename) 
-      
-      return file_size
+        file_size=super().size_extractor()
+        
+        return file_size
   
     def time_extractor(self):
         
-        file_time=os.path.getctime(self.filename)
+        file_time=super().size_extractor()
         
-        return file_time
+        return file_time 
    
     def get_file_content(self):
         

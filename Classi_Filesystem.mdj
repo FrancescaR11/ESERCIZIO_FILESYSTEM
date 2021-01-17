@@ -188,13 +188,47 @@
 											"height": 13,
 											"text": "+create_instance()",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAF3Eo0WhmLLKrU=",
+											"_parent": {
+												"$ref": "AAAAAAF2ws81G7rR77g="
+											},
+											"model": {
+												"$ref": "AAAAAAF3Eo0WQWLIwOk="
+											},
+											"font": "Arial;13;0",
+											"left": 293,
+											"top": 339,
+											"width": 111.642578125,
+											"height": 13,
+											"text": "+size_extractor()",
+											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAF3Eo1Kz2Ms58Y=",
+											"_parent": {
+												"$ref": "AAAAAAF2ws81G7rR77g="
+											},
+											"model": {
+												"$ref": "AAAAAAF3Eo1Kw2Mp16k="
+											},
+											"font": "Arial;13;0",
+											"left": 293,
+											"top": 354,
+											"width": 111.642578125,
+											"height": 13,
+											"text": "+time_extractor()",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 288,
 									"top": 304,
 									"width": 121.642578125,
-									"height": 38
+									"height": 68
 								},
 								{
 									"_type": "UMLReceptionCompartmentView",
@@ -4364,6 +4398,22 @@
 								"$ref": "AAAAAAF2ws81GbrIzbc="
 							},
 							"name": "create_instance"
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAF3Eo0WQWLIwOk=",
+							"_parent": {
+								"$ref": "AAAAAAF2ws81GbrIzbc="
+							},
+							"name": "size_extractor"
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAF3Eo1Kw2Mp16k=",
+							"_parent": {
+								"$ref": "AAAAAAF2ws81GbrIzbc="
+							},
+							"name": "time_extractor"
 						}
 					]
 				},
@@ -4724,7 +4774,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF2wuGRrMSyTxA="
 							},
-							"name": "filename"
+							"name": "filename",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -4732,7 +4783,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF2wuGRrMSyTxA="
 							},
-							"name": "condition_list"
+							"name": "condition_list",
+							"type": ""
 						}
 					],
 					"operations": [
@@ -4775,7 +4827,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF2wuHsScUkG/c="
 							},
-							"name": "parola"
+							"name": "parola",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -4783,7 +4836,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF2wuHsScUkG/c="
 							},
-							"name": "occorrenza"
+							"name": "occorrenza",
+							"type": ""
 						}
 					],
 					"operations": [
@@ -4826,7 +4880,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF26BmBXYWjYGg="
 							},
-							"name": "condition_list"
+							"name": "condition_list",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -4834,7 +4889,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF26BmBXYWjYGg="
 							},
-							"name": "obj"
+							"name": "obj",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -4842,7 +4898,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF26BmBXYWjYGg="
 							},
-							"name": "occurrence"
+							"name": "occurrence",
+							"type": ""
 						}
 					],
 					"operations": [
@@ -4913,7 +4970,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF2+swTGgDvxf0="
 							},
-							"name": "condition_list"
+							"name": "condition_list",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -4921,7 +4979,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF2+swTGgDvxf0="
 							},
-							"name": "value"
+							"name": "value",
+							"type": ""
 						}
 					],
 					"operations": [
@@ -4964,7 +5023,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF2+sxhXAG5w3U="
 							},
-							"name": "condition_list"
+							"name": "condition_list",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -4972,7 +5032,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF2+sxhXAG5w3U="
 							},
-							"name": "value"
+							"name": "value",
+							"type": ""
 						}
 					],
 					"operations": [
