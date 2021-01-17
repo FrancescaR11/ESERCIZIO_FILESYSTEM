@@ -21,7 +21,15 @@ from imageai.Detection import ObjectDetection
 
 '''
 
-Uso argparse per la lettura del file di input e la scrittura del file di output.
+Uso argparse per la lettura dei file di input e la scrittura del file di output.
+Il programma riceve in ingresso:
+    
+- 'input.json' --> il file json contentente la porzione del filesystem su cui effettuare la ricerca e
+  una lista delle condizioni che devono essere verificate.
+  
+- 'objects.txt' --> una file di testo contenente la lista degli oggetti individuabili dall'algoritmo
+
+Il programma restituisce in output un file txt contenente la lista di file che soddisfano le condizioni richieste.
 
 '''
 
@@ -44,9 +52,9 @@ args=parser.parse_args()
 
 '''
 
-Creo la classe che prende in ingresso il file che stiamo analizzando. 
-Se il formato è presente nel file di input, chiamo la classe che verifica la 
-seconda condizione.
+Creo la classe 'PathChecker' che prende in ingresso il file che stiamo analizzando e il dizionario, 'condition_list'
+contenente l'informazione del file json di input. 
+Se il formato è presente nel file di input restituisce True altrimenti restituisce False
 
 
 '''
@@ -60,26 +68,26 @@ class PathChecker():
         
     def function(self) :
        
-        suffix = splitext(self.filename)[1][1:].lower()
-        
-
-            
-        if suffix in self.condition_list['filetypelist']: # Se il formato del file è presente tra i formati del file di input...
+        suffix = splitext(self.filename)[1][1:].lower()  #Estraggo il formato del file
+  
+        #Se il formato del file è presente tra i formati del file di input restituisco True
+        if suffix in self.condition_list['filetypelist']: 
                
                return True
         else:
                 
-                return 'failure'
+               return 'failure'
             
             
             
             
 '''
 
-Creo classe astratta sulle condizioni. Questa classe rimanda alla classe PathChecker,
-indipendentemente dal formato.
+Creo classe astratta sulle condizioni. Questa classe rimanda, tramite il metodo 'create_instance()' 
+alla classe PathChecker, indipendentemente dal formato.
 Questa classe contiene il metodo astratto checker(), che viene implementato diversamente
-in base alla condizione.
+in base alla condizione. Tale metodo restituisce sempre 'True' se la condizione è soddisfatta
+e 'False' altrimenti.
 
 '''
 
@@ -111,8 +119,8 @@ class Condition(ABC):
 
 '''
 
-Creo la classe derivata che chiama la funzione importata Occurence_Condition e resituisce in output
-la lista dei path dei file che soddisfano sia la condizione sul formato che quella sulle occorrenze delle parole.
+Creo la classe derivata 'OccurrenceChecker' che verifica, tramite il metodo 'checker()',
+per ogni coppia parola-occorrenza, che la condizione sia verificata.
 
 '''
  
@@ -129,36 +137,41 @@ class OccurrenceChecker(Condition):
     
     def checker(self,file_object):
      
+     #Se il 'file_object' creato fa riferimento ad un formato immagine,
+     #restituisce 'True' e salta la condizione relativa al file di testo.
+     
      if   type(file_object)== JPEGReader:
          
          return True 
      
      else:
+         
+         #Il metodo 'get_file_content' restituisce la lista di stringhe presente nel file di testo
      
          lista_parole=file_object.get_file_content()
  
-         ripetizioni=0  
+         ripetizioni=0  #Inizializzo il numero di ripetizioni della parola
 
-         for stringa in lista_parole: 
+         for stringa in lista_parole: #Confronto ogni stringa di 'lista_parole' con la parola cercata
              
-           if stringa==self.parola: 
+           if stringa==self.parola: #Se è presente nel file..
                 
-              ripetizioni+=1 
+              ripetizioni+=1 #..incremento
          
-         if ripetizioni== self.occorrenza:
+         if ripetizioni== self.occorrenza: #Se la stringa è presente tante volte quanto richiesto dalla condizione..
               
-               return True
+               return True 
          else :
               
                return False
 
-       
-      
+            
 
 '''
+Creo la classe derivata 'SizeChecker' che verifica, tramite il metodo 'checker()',
+che le condizioni sulla dimensione del file siano verificate.
+
 '''
-
-
 
 
 class SizeChecker(Condition):
@@ -174,9 +187,10 @@ class SizeChecker(Condition):
     
     def checker(self,file_object):
         
-        if (self.condition_list['size']['min'])==self.value :
+        #Se il valore passato alla classe corrisponde al minimo
+        if (self.condition_list['size']['min'])==self.value : 
         
-        
+          #Verifico la condizione sul minimo
           if  self.value < file_object.size_extractor() :
           
               return True
@@ -184,9 +198,10 @@ class SizeChecker(Condition):
           else:
              
                 return False
-            
+        #Se il valore passato alla classe corrisponde al massimo   
         elif (self.condition_list['size']['max'])==self.value :  
-             
+           
+           #Verifico la condizione sul massimo
            if   file_object.size_extractor() < self.value:
           
               return True
@@ -195,9 +210,11 @@ class SizeChecker(Condition):
              
                 return False
             
-            
-            
+                       
 '''
+Creo la classe derivata 'TimeChecker' che verifica, tramite il metodo 'checker()',
+che le condizioni sulla data di creazione del file siano verificate.
+
 '''
 
 class TimeChecker(Condition):
@@ -212,17 +229,21 @@ class TimeChecker(Condition):
         
     def checker(self,file_object):   
         
-        
+        #Se il valore passato alla classe corrisponde al minimo
         if condition_list['time']['min']==self.value :
             
+            #Se il minimo non è specificato lo sostituisco con 0
             if self.value== '':
                 
                 time_min=0
                 
+            #Se invece il minimo è specificato    
             else :
-             
+                
+                #Estraggo la data di creazione del file e la converto il formato timestamp
                 time_min=time.mktime(datetime.datetime.strptime(self.value, "%Y-%m-%d").timetuple())   
-            
+                
+            #Verifico la condizione sul minimo
             if  (time_min) < file_object.time_extractor():
             
                 return True
@@ -231,12 +252,13 @@ class TimeChecker(Condition):
                 
                 return False
                 
-                
+        #Se il valore passato alla classe corrisponde al massimo      
         if  condition_list['time']['max']==self.value :
             
+            #Estraggo la data di creazione del file e la converto il formato timestamp
             time_max=time.mktime(datetime.datetime.strptime(self.value, "%Y-%m-%d").timetuple())
                 
-            
+            #Verifico la condizione sul massimo
             if   file_object.time_extractor() < (time_max):
                 
                 return True
@@ -248,7 +270,8 @@ class TimeChecker(Condition):
 
 
 '''
-Creo la classe derivata che verifica la seconda condizione sulle immagini.
+Creo la classe derivata 'ImageChecker' che verifica, tramite il metodo 'checker()',
+per ogni coppia obj-occurrence, che la condizione sia verificata.
 
 '''   
 
@@ -266,23 +289,26 @@ class ImageChecker(Condition):
     
     def checker(self,file_object):
         
+        #Se il 'file_object' creato fa riferimento ad un formato testuale,
+        #restituisce 'True' e salta la condizione relativa al file immagine.
         if type(file_object)!= JPEGReader:
             
             return True
         
         else:
-         
+            
+            #Il metodo 'get_file_content' restituisce la lista di oggetti presente nel file immagine
             found_objects=file_object.get_file_content()
         
-            ripetizioni=0  
+            ripetizioni=0  #Inizializzo il numero di ripetizioni dell'oggetto 
 
-            for found_obj in found_objects: 
+            for found_obj in found_objects: #Confronto ogni oggetto di 'found_objects' con l'oggetto cercato
              
-              if found_obj==self.obj: 
+              if found_obj==self.obj: #Se l'oggetto è presente..
                 
-               ripetizioni+=1 
+               ripetizioni+=1  #..incremento
          
-            if ripetizioni== self.occurrence:
+            if ripetizioni== self.occurrence: #Se l'oggetto' è presente tante volte quanto richiesto dalla condizione..
               
                return True
             else :
@@ -296,14 +322,16 @@ class ImageChecker(Condition):
 
 '''
 
-Creo classe astratta che legge il formato. Questa classe prende in ingresso il file che sto analizzando e restituisce,
-attraverso la chiamata alle classi derivate specifiche per ogni formato, il contenuto del file.
-Nel caso di file di testo, restituisce la lista delle parole.
+Creo classe astratta 'FormatReader' che legge il formato. Questa classe prende in ingresso il file 
+che sto analizzando e restituisce, attraverso la chiamata alle classi derivate specifiche per ogni formato,
+il contenuto del file. Nel caso di file di testo, restituisce la lista delle parole. Nel caso di file immagine,
+restituisce la lista degli oggetti presenti nell'immagine.
 
 '''
 
 
 class FormatReader(ABC):
+    
     """
     interface
     """
@@ -311,9 +339,8 @@ class FormatReader(ABC):
     def __init__(self,filename):  #,size,creation_date):
         
       self.filename=filename
-    #     #self.size=size
-    #     #self.creation_date=creation_date
-    #     pass
+      super().__init__()
+
 
     @abstractmethod
     def get_file_content(self):
@@ -323,6 +350,8 @@ class FormatReader(ABC):
         pass
 
     @staticmethod
+    
+    #Il metodo 'create_instance()' rimanda alla classe derivata specifica per ogni formato.
     def create_instance(filename):
         
         suffix = splitext(filename)[1][1:].lower()
@@ -355,14 +384,12 @@ class FormatReader(ABC):
 
 
 """
-"""
-class JPEGReader(FormatReader):
+Creo classe derivata per la lettura dei file jpeg. Questa classe prende in ingresso il file jpeg
+che sto analizzando e restituisce la lista degli oggetti contenuti nel file immagine.
 
-    def __init__(self, filename):
-        
-       super().__init__(filename)
-       
-       
+"""
+
+class JPEGReader(FormatReader):
         
     def size_extractor(self):
         
@@ -379,7 +406,7 @@ class JPEGReader(FormatReader):
     
     def get_file_content(self):
         
-        found_objects=[]
+        found_objects=[]  #Inizializzo la lista degli oggetti trovati nell'immagine
         detector = ObjectDetection()
 
         model_path = "./models/yolo-tiny.h5"
@@ -389,15 +416,16 @@ class JPEGReader(FormatReader):
         detector.setModelPath(model_path)
         detector.loadModel()
         
- 
+        #creo la lista detection contenente gli oggetti rilevati nell'immagine con una probabilità superiore al 30%. 
         
         detection = detector.detectObjectsFromImage(input_image=file, output_image_path=args.out_data_2+os.path.basename(file),minimum_percentage_probability=30)
         
         for eachItem in detection:
             
+            #Appendo alla lista 'found_objects' i nomi degli oggetti trovati
             found_objects.append(eachItem["name"]) 
             
-        return found_objects     
+        return found_objects  # Restituisco la lista degli oggetti contenuti nel file immagine
     
 
 
@@ -411,11 +439,6 @@ restituisce la lista delle parole contenute nel file.
 
 class TXTReader(FormatReader):
 
-    def __init__(self, filename):
-        
-       super().__init__(filename)
-     
-    
     def size_extractor(self):
         
       file_size=os.path.getsize (self.filename)
@@ -449,11 +472,6 @@ restituisce la lista delle parole contenute nel file.
 
 class CSVReader(FormatReader):
 
-    def __init__(self, filename):
-        
-        super().__init__(filename)
-
-     
     def size_extractor(self):
         
       file_size=os.path.getsize (self.filename)
@@ -496,10 +514,6 @@ restituisce la lista delle parole contenute nel file.
 '''         
     
 class XLSXReader(FormatReader):
-
-    def __init__(self, filename):
-        
-        super().__init__(filename)
 
     def size_extractor(self):
         
@@ -546,11 +560,6 @@ restituisce la lista delle parole contenute nel file.
     
 
 class PDFReader(FormatReader):
-
-    def __init__(self, filename):
-        
-        super().__init__(filename)
-
    
     def size_extractor(self):
         
@@ -583,7 +592,13 @@ class PDFReader(FormatReader):
            
         return lista_stringhe_pdf # Restituisco la lista delle parole contenute nel file
 
+'''
+Creo la classe 'InputInterpreter' che restituisce, partendo dal file di input,
+'lista_classi', ovvero la lista contenente tutte le condizioni da verificare. 
+In particolare tale lista contiene la chiamata alle classi che verificano le singole condizioni.
+Per ogni specifica condizione viene quindi creato un oggetto diverso.
 
+'''
 
 
 class InputInterpreter():
@@ -595,17 +610,28 @@ class InputInterpreter():
         
     def extractor(self,image_objects):
         
-        lista_classi=[]
+        #inizializzo la lista delle classi da chiamare per verificare le condizioni
+        lista_classi=[] 
+        #Estraggo la lista delle differenti tipologie di condizione
         lista_condizioni= list(self.condition_list.keys())
 
         if 'size'  in lista_condizioni:
             
+            '''
+            Appendo a 'lista_classi' le diverse chiamate alla classe
+            che gestisce la condizione sulla 'size' (dimensione del file). 
+            Creo in questo modo due oggetti diversi, uno per soddisfare la
+            dimensione minima e uno per la dimensione massima.
+            '''
             minima=self.condition_list['size']['min']
             massima=self.condition_list['size']['max']
             lista_classi.append(SizeChecker(self.condition_list,minima))
             lista_classi.append(SizeChecker(self.condition_list,massima))
         
         if 'time'  in lista_condizioni:
+            
+            #Appendo a 'lista_classi' le diverse chiamate alla classe
+            #che gestisce la condizione sul 'time' (data di creazione del file).
             
             minima=self.condition_list['time']['min']
             massima=self.condition_list['time']['max']
@@ -614,19 +640,29 @@ class InputInterpreter():
         
         if 'wordlist' in lista_condizioni:
             
+            '''
+            Appendo a 'lista_classi' le diverse chiamate alla classe
+            che gestisce la condizione sulla 'wordlist' (lista delle parole cercate).
+            Creo tanti oggetti della classe 'OccurrenceChecker' quante sono le coppie parola-occorrenza cercate.
+            '''
             for parola in self.condition_list['wordlist'].keys():
                lista_classi.append(OccurrenceChecker(parola,self.condition_list['wordlist'][parola]))
         
         if 'objectlist' in lista_condizioni:
             
+            #Appendo a 'lista_classi' le diverse chiamate alla classe
+            #che gestisce la condizione sulla 'objectlist' (lista degli oggetti cercati). 
+            
             for obj in self.condition_list['objectlist'].keys():
                 
-                if obj in image_objects:
+                #controllo se l'oggetto è tra quelli riconoscibili dall'algoritmo
                     
+                if obj in image_objects:
+            
                     lista_classi.append(ImageChecker(condition_list,obj,self.condition_list['objectlist'][obj]))
                     
                  
-        return lista_classi
+        return lista_classi  #Restituisco la lista contenente la chiamata alle classi per ogni specifica condizione
 
 
 
@@ -660,35 +696,51 @@ for path in condition_list['dirlist']: # Scandisco tutti i path contenuti nel fi
              lista_path.append(os.path.join(root, name)) # Aggiungo il path del file 'name' alla lista dei path dei file trovati    
     
 
-    
+#Chiamando la classe 'InputInterpreter' estraggo la lista
+#contenente le chiamate alle classi per ogni specifica condizione.  
     
 lista_classi=InputInterpreter(condition_list).extractor(image_objects)   
 
-# Inizializzo la lista che conterrà i file che soddisfano sia la condizione sul formato che quella sulle occorrenze delle parole
+# Inizializzo la lista che conterrà i file che soddisfano tutte le condizioni
 
 searched_file=[]
 
-for file in lista_path: # Scandisco tutti i file trovati nei path passati con il file di input
-     
- 
+# Scandisco i path dei file relativi alla porzione di filesystem su cui verificare le condizioni
+for file in lista_path:     
+    
+    '''
+    Il metodo 'create_instance' della classe 'Condition' rimanda, indistintamente 
+    dal formato del file, alla classe 'PathChecker' che verifica che il formato sia 
+    tra quelli cercati. In tal caso restituisce 'True', altrimenti 'failure'.
+    Se il valore restituito è 'failure' passa direttamente ad analizzare il file successivo.
+    '''
     condition=Condition.create_instance(condition_list,file)
        
 
-     
     if condition !='failure':
         
+        '''
+        Il metodo 'create_instance' della classe 'FormatReader' rimanda, in base all'estensione
+        del file, alla classe derivata in grado di estrarne il contenuto, la size e la data di creazione.
+        '''
         file_object=FormatReader.create_instance(file)
         
-    
+        '''
+        Eseguo il ciclo su tutte le condizioni, chiamando il metodo 'checker' della classe
+        'Condition', implementato diversamente per ogni tipologia di condizione. Il metodo checker 
+        restituisce 'True' se la condizione è verificata e 'False' in caso contrario.
+        '''
+        
         for condizione in lista_classi:
             
             is_verified_condition= condizione.checker(file_object)
               
-            if  is_verified_condition== False:
+            #Se la condizione non è verificata esco dal ciclo passando al file successivo
+            if  is_verified_condition== False:  
                  
                 break 
             
-        
+        #Se verifica tutte le condizioni lo appendo nel file di output 'searched_file'
         if  is_verified_condition== True:       
               
               searched_file.append(file)
@@ -698,8 +750,8 @@ for file in lista_path: # Scandisco tutti i file trovati nei path passati con il
 
 with open(args.out_data, "w") as output:
     
-    output.write(str(searched_file))              
-    
+    output.write(str(searched_file))         
+
     
     
     
