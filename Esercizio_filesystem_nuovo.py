@@ -230,7 +230,7 @@ class TimeChecker(Condition):
     def checker(self,file_object):   
         
         #Se il valore passato alla classe corrisponde al minimo
-        if condition_list['time']['min']==self.value :
+        if self.condition_list['time']['min']==self.value :
             
             #Se il minimo non è specificato lo sostituisco con 0
             if self.value== '':
@@ -253,7 +253,7 @@ class TimeChecker(Condition):
                 return False
                 
         #Se il valore passato alla classe corrisponde al massimo      
-        if  condition_list['time']['max']==self.value :
+        if  self.condition_list['time']['max']==self.value :
             
             #Estraggo la data di creazione del file e la converto il formato timestamp
             time_max=time.mktime(datetime.datetime.strptime(self.value, "%Y-%m-%d").timetuple())
@@ -418,7 +418,7 @@ class JPEGReader(FormatReader):
         
         #creo la lista detection contenente gli oggetti rilevati nell'immagine con una probabilità superiore al 30%. 
         
-        detection = detector.detectObjectsFromImage(input_image=file, output_image_path=args.out_data_2+os.path.basename(file),minimum_percentage_probability=30)
+        detection = detector.detectObjectsFromImage(input_image=self.filename, output_image_path=args.out_data_2+os.path.basename(self.filename),minimum_percentage_probability=30)
         
         for eachItem in detection:
             
@@ -659,7 +659,7 @@ class InputInterpreter():
                     
                 if obj in image_objects:
             
-                    lista_classi.append(ImageChecker(condition_list,obj,self.condition_list['objectlist'][obj]))
+                    lista_classi.append(ImageChecker(self.condition_list,obj,self.condition_list['objectlist'][obj]))
                     
                  
         return lista_classi  #Restituisco la lista contenente la chiamata alle classi per ogni specifica condizione
