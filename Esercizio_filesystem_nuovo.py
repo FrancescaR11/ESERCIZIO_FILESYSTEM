@@ -430,11 +430,8 @@ class JPEGReader(FormatReader):
         
         #creo la lista detection contenente gli oggetti rilevati nell'immagine con una probabilità superiore al 30%. 
         
-<<<<<<< HEAD
-        detection = detector.detectObjectsFromImage(input_image=file, output_image_path=args.out_data_2+os.path.basename(self.filename),minimum_percentage_probability=30)
-=======
         detection = detector.detectObjectsFromImage(input_image=self.filename, output_image_path=args.out_data_2+os.path.basename(self.filename),minimum_percentage_probability=30)
->>>>>>> ef3e09756415084f396010d0b94f3ddfca9e2717
+
         
         for eachItem in detection:
             
