@@ -2901,13 +2901,30 @@
 											"height": 13,
 											"text": "+occurrence",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLAttributeView",
+											"_id": "AAAAAAF3GxNbpCp/T0A=",
+											"_parent": {
+												"$ref": "AAAAAAF26BmBXoWr2tU="
+											},
+											"model": {
+												"$ref": "AAAAAAF3GxNbgyp2TYs="
+											},
+											"font": "Arial;13;0",
+											"left": 749,
+											"top": 483,
+											"width": 150,
+											"height": 13,
+											"text": "+detector",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 744,
 									"top": 433,
 									"width": 160,
-									"height": 53
+									"height": 68
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -2930,7 +2947,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 749,
-											"top": 491,
+											"top": 506,
 											"width": 150,
 											"height": 13,
 											"text": "+cheker()",
@@ -2939,7 +2956,7 @@
 									],
 									"font": "Arial;13;0",
 									"left": 744,
-									"top": 486,
+									"top": 501,
 									"width": 160,
 									"height": 23
 								},
@@ -2981,7 +2998,7 @@
 							"left": 744,
 							"top": 408,
 							"width": 160,
-							"height": 101,
+							"height": 116,
 							"nameCompartment": {
 								"$ref": "AAAAAAF26BmBXoWmgPM="
 							},
@@ -3019,7 +3036,7 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 730,
+									"left": 727,
 									"top": 383,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -3040,7 +3057,7 @@
 									},
 									"visible": null,
 									"font": "Arial;13;0",
-									"left": 720,
+									"left": 716,
 									"top": 394,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -3061,7 +3078,7 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 751,
+									"left": 748,
 									"top": 362,
 									"height": 13,
 									"alpha": -1.5707963267948966,
@@ -3080,7 +3097,7 @@
 								"$ref": "AAAAAAF26BmBXoWlBtw="
 							},
 							"lineStyle": 1,
-							"points": "770:407;713:352",
+							"points": "765:407;711:352",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAF26Bn1rIZ5hf8="
@@ -4900,6 +4917,14 @@
 							},
 							"name": "occurrence",
 							"type": ""
+						},
+						{
+							"_type": "UMLAttribute",
+							"_id": "AAAAAAF3GxNbgyp2TYs=",
+							"_parent": {
+								"$ref": "AAAAAAF26BmBXYWjYGg="
+							},
+							"name": "detector"
 						}
 					],
 					"operations": [
