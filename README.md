@@ -18,3 +18,6 @@ Per poter eseguire il codice è necessario installare:
 - keras==2.4.3;
 - ImageAI==2.1.6.
 Per l'esecuzione del programma è consigliabile creare un nuovo ambiente virtuale ed installarvi i requisiti necessari, scpecificati all'interno del file requirements.txt.
+Per una migliore leggibilità il programma è stato suddiviso in tre file:
+- Main_Program.py, contenente il programma principale che deve essere eseguito;
+- Reader_Class.py e Conditions_Classes.py, contenenti le classi e i metodi che vengono importati in Main_Program.py.

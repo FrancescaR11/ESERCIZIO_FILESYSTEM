@@ -1,1 +1,1 @@
-['./test/test_due/file_uno.pdf', './test/test_uno/file_uno.txt']
+['./test/test_due/file_uno.pdf', './test/test_uno/file_uno.txt', './test/test_uno/images-3.jpeg']
