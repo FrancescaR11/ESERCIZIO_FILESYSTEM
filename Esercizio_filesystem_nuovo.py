@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jan 19 11:52:14 2021
+
+@author: gaiad
+"""
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -76,7 +83,7 @@ class PathChecker():
                return True
         else:
                 
-               return 'failure'
+               return False
             
                        
             
@@ -94,25 +101,18 @@ class Condition(ABC):
     """
     interface
     """
-    def __init__(self):#,condition_list):
-      
-      #  self.condition_list=condition_list
+    def __init__(self):
+     
      pass
-
-    @staticmethod
-    
-    def create_instance(condition_list,filename):  
-
-        return PathChecker(filename,condition_list).function()
             
     @abstractmethod
   
     def checker(self) :
         
-    #     """
-    #     abstract method
-    #     """
-         pass
+        """
+        abstract method
+        """
+        pass
         
     
 
@@ -176,38 +176,35 @@ che le condizioni sulla dimensione del file siano verificate.
 class SizeChecker(Condition):
     
     
-    def __init__(self,condition_list,value):
+    def __init__(self,condition_list,min_value,max_value):
         
         
         self.condition_list=condition_list
         #super().__init__(condition_list)
-        self.value=value
+        self.min_value=min_value
+        self.max_value=max_value
        
     
     def checker(self,file_object):
         
-        #Se il valore passato alla classe corrisponde al minimo
-        if (self.condition_list['size']['min'])==self.value : 
-        
-          #Verifico la condizione sul minimo
-          if  self.value < file_object.size_extractor() :
+          if self.min_value=='':
+              
+              self.min_value=0
+            
+          if (self.max_value=='') | (self.max_value=='infinito'):
+              
+              self.max_value=float('inf')
+              
+                
+          #Verifico la condizione sulla dimensione
+          if  self.min_value < file_object.size_extractor() < self.max_value :
           
               return True
           
           else:
              
-                return False
-        #Se il valore passato alla classe corrisponde al massimo   
-        elif (self.condition_list['size']['max'])==self.value :  
-           
-           #Verifico la condizione sul massimo
-           if   file_object.size_extractor() < self.value:
-          
-              return True
-          
-           else:
-             
-                return False
+              return False
+
             
                        
 '''
@@ -218,21 +215,20 @@ che le condizioni sulla data di creazione del file siano verificate.
 
 class TimeChecker(Condition):
     
-    def __init__(self,condition_list,value):
+    def __init__(self,condition_list,min_value,max_value):
         
         
         #super().__init__(condition_list)
         self.condition_list=condition_list
-        self.value=value
+        self.min_value=min_value
+        self.max_value=max_value
         
         
     def checker(self,file_object):   
         
-        #Se il valore passato alla classe corrisponde al minimo
-        if self.condition_list['time']['min']==self.value :
             
             #Se il minimo non è specificato lo sostituisco con 0
-            if self.value== '':
+            if self.min_value== '':
                 
                 time_min=0
                 
@@ -240,32 +236,24 @@ class TimeChecker(Condition):
             else :
                 
                 #Estraggo la data di creazione del file e la converto il formato timestamp
-                time_min=time.mktime(datetime.datetime.strptime(self.value, "%Y-%m-%d").timetuple())   
+                time_min=time.mktime(datetime.datetime.strptime(self.min_value, "%Y-%m-%d").timetuple())  
                 
-            #Verifico la condizione sul minimo
-            if  (time_min) < file_object.time_extractor():
+            if self.max_value=='':
+                
+                time_max=float('inf')
+                
+            else :
+                #Estraggo la data di creazione del file e la converto il formato timestamp
+                time_max=time.mktime(datetime.datetime.strptime(self.max_value, "%Y-%m-%d").timetuple())
+                
+            #Verifico la condizione sulla data di creazione
+            if  (time_min) < file_object.time_extractor() < (time_max):
             
                 return True
             
             else:
                 
                 return False
-                
-        #Se il valore passato alla classe corrisponde al massimo      
-        if  self.condition_list['time']['max']==self.value :
-            
-            #Estraggo la data di creazione del file e la converto il formato timestamp
-            time_max=time.mktime(datetime.datetime.strptime(self.value, "%Y-%m-%d").timetuple())
-                
-            #Verifico la condizione sul massimo
-            if   file_object.time_extractor() < (time_max):
-                
-                return True
-           
-            else:
-              
-                return False
-  
 
 
 '''
@@ -276,13 +264,13 @@ per ogni coppia obj-occurrence, che la condizione sia verificata.
 
 class ImageChecker(Condition):
    
-    def __init__(self, condition_list, obj, occurrence):
+    def __init__(self, condition_list, obj, occurrence, detector):
        
         
        self.condition_list=condition_list
-       #super().__init__(condition_list) 
        self.obj=obj
        self.occurrence=occurrence
+       self.detector=detector
        
     
     
@@ -297,7 +285,7 @@ class ImageChecker(Condition):
         else:
             
             #Il metodo 'get_file_content' restituisce la lista di oggetti presente nel file immagine
-            found_objects=file_object.get_file_content()
+            found_objects=file_object.get_file_content(self.detector)
         
             ripetizioni=0  #Inizializzo il numero di ripetizioni dell'oggetto 
 
@@ -416,13 +404,13 @@ class JPEGReader(FormatReader):
         return file_time   
 
     
-    def get_file_content(self):
+    def get_file_content(self,detector):
         
         found_objects=[]  #Inizializzo la lista degli oggetti trovati nell'immagine
-        detector = ObjectDetection()
+        #detector = ObjectDetection()
 
         model_path = "./models/yolo-tiny.h5"
-        #output_path = args.out_dir
+        # #output_path = args.out_dir
         
         detector.setModelTypeAsTinyYOLOv3()
         detector.setModelPath(model_path)
@@ -636,20 +624,18 @@ class InputInterpreter():
             Creo in questo modo due oggetti diversi, uno per soddisfare la
             dimensione minima e uno per la dimensione massima.
             '''
-            minima=self.condition_list['size']['min']
-            massima=self.condition_list['size']['max']
-            lista_classi.append(SizeChecker(self.condition_list,minima))
-            lista_classi.append(SizeChecker(self.condition_list,massima))
+            min_value=self.condition_list['size']['min']
+            max_value=self.condition_list['size']['max']
+            lista_classi.append(SizeChecker(self.condition_list,min_value,max_value))
         
         if 'time'  in lista_condizioni:
             
             #Appendo a 'lista_classi' le diverse chiamate alla classe
             #che gestisce la condizione sul 'time' (data di creazione del file).
             
-            minima=self.condition_list['time']['min']
-            massima=self.condition_list['time']['max']
-            lista_classi.append(TimeChecker(self.condition_list,minima))  
-            lista_classi.append(TimeChecker(self.condition_list,massima))
+            min_value=self.condition_list['time']['min']
+            max_value=self.condition_list['time']['max']
+            lista_classi.append(TimeChecker(self.condition_list,min_value,max_value))  
         
         if 'wordlist' in lista_condizioni:
             
@@ -663,6 +649,12 @@ class InputInterpreter():
         
         if 'objectlist' in lista_condizioni:
             
+            detector = ObjectDetection()
+            
+            model_path = "./models/yolo-tiny.h5"
+            detector.setModelTypeAsTinyYOLOv3()
+            detector.setModelPath(model_path)
+            detector.loadModel()
             #Appendo a 'lista_classi' le diverse chiamate alla classe
             #che gestisce la condizione sulla 'objectlist' (lista degli oggetti cercati). 
             
@@ -672,7 +664,7 @@ class InputInterpreter():
                     
                 if obj in image_objects:
             
-                    lista_classi.append(ImageChecker(self.condition_list,obj,self.condition_list['objectlist'][obj]))
+                    lista_classi.append(ImageChecker(self.condition_list,obj,self.condition_list['objectlist'][obj],detector))
                     
                  
         return lista_classi  #Restituisco la lista contenente la chiamata alle classi per ogni specifica condizione
@@ -727,10 +719,10 @@ for file in lista_path:
     tra quelli cercati. In tal caso restituisce 'True', altrimenti 'failure'.
     Se il valore restituito è 'failure' passa direttamente ad analizzare il file successivo.
     '''
-    condition=Condition.create_instance(condition_list,file)
-       
+    
+    condition=PathChecker(file,condition_list).function()  
 
-    if condition !='failure':
+    if condition !=False:
         
         '''
         Il metodo 'create_instance' della classe 'FormatReader' rimanda, in base all'estensione
@@ -763,12 +755,4 @@ for file in lista_path:
 
 with open(args.out_data, "w") as output:
     
-    output.write(str(searched_file))         
-
-    
-    
-    
-    
-    
-    
-    
+    output.write(str(searched_file))  
