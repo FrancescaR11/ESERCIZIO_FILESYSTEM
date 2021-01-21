@@ -21,3 +21,7 @@ Per l'esecuzione del programma è consigliabile creare un nuovo ambiente virtual
 Per una migliore leggibilità il programma è stato suddiviso in tre file:
 - Main_Program.py, contenente il programma principale che deve essere eseguito;
 - Reader_Class.py e Conditions_Classes.py, contenenti le classi e i metodi che vengono importati in Main_Program.py.
+Per non far restituire al programma le immagini su cui l'algoritmo effettua l'analisi, sono state apportate delle modifica al file __init__.py di imageai:
+ - riga 200: output_type=None;
+ - riga 387: elif (output_type==None): return detections;
+ - riga:396: elif (output_type==None): return detections.

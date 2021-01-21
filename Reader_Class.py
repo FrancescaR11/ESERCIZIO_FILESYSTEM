@@ -12,16 +12,8 @@ import openpyxl
 import csv  
 import pdfplumber 
 from abc import ABC, abstractmethod
-import argparse 
 
 
-
-parser=argparse.ArgumentParser()
-
-parser.add_argument("-o_2", "--out_data_2", help="Complete path to the file containing output of the images detector", 
-                    type=str, default='./results/')
-
-args=parser.parse_args()
 
 '''
 
@@ -68,6 +60,7 @@ class FormatReader(ABC):
     @staticmethod
     
     #Il metodo 'create_instance()' rimanda alla classe derivata specifica per ogni formato.
+    
     def create_instance(filename):
         
         suffix = splitext(filename)[1][1:].lower()
@@ -123,23 +116,17 @@ class JPEGReader(FormatReader):
     def get_file_content(self,detector):
         
         found_objects=[]  #Inizializzo la lista degli oggetti trovati nell'immagine
-        #detector = ObjectDetection()
 
-        model_path = "./models/yolo-tiny.h5"
-        # #output_path = args.out_dir
-        
-        detector.setModelTypeAsTinyYOLOv3()
-        detector.setModelPath(model_path)
-        detector.loadModel()
         
         #creo la lista detection contenente gli oggetti rilevati nell'immagine con una probabilità superiore al 30%. 
         
-        detection = detector.detectObjectsFromImage(input_image=self.filename, output_image_path=args.out_data_2+os.path.basename(self.filename),minimum_percentage_probability=30)
+        detection = detector.detectObjectsFromImage(input_image=self.filename, output_type=None,minimum_percentage_probability=30)
 
         
         for eachItem in detection:
             
             #Appendo alla lista 'found_objects' i nomi degli oggetti trovati
+           
             found_objects.append(eachItem["name"]) 
             
         return found_objects  # Restituisco la lista degli oggetti contenuti nel file immagine
